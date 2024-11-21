@@ -12,7 +12,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   final QuestionController questionController = Get.put(QuestionController());
   @override
   void initState() {
-    questionController.loadQuestionCategoryFromSharedPreferences();
+    questionController.loadCategoriesFromHive();
     super.initState();
   }
 
@@ -37,7 +37,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   title: Text(controller.savedTitleCategory[index]),
                   subtitle: Text(controller.savedSubtitleCategory[index]),
                   trailing: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      controller.deleteCategory(index);
+                    },
                     icon: Icon(Icons.delete),
                   ),
                 ),
@@ -77,12 +79,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
       textConfirm: "Create",
       textCancel: "Cancel",
       onConfirm: () {
-        questionController.saveQuestionCategoryToSharedPreferences();
-        print(
-          "Category Title: ${questionController.categoryTitleController.text}"
-        );
-        Get.back();
-      },
+  if (questionController.categoryTitleController.text.isNotEmpty &&
+      questionController.categorySubtitleController.text.isNotEmpty) {
+    questionController.saveCategoryToHive(
+      questionController.categoryTitleController.text,
+      questionController.categorySubtitleController.text,
+    );
+    print("Category Title: ${questionController.categoryTitleController.text}");
+    Get.back(); // Close the dialog after saving
+  } else {
+    Get.snackbar("Error", "Title and Subtitle cannot be empty.");
+  }
+},
+
     );
   }
 }

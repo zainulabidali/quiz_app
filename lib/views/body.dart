@@ -16,7 +16,7 @@ class Body extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         Image.asset(
-          "assets/bgimg1.jpg",
+          "assets/bg img 5.jpg",
           fit: BoxFit.fill,
         ),
         SafeArea(
@@ -33,7 +33,7 @@ class Body extends StatelessWidget {
                         .copyWith(color: KSecondaryColor),
                     children: [
                       TextSpan(
-                          text: "/${questionController.filterdQuestion.length}",
+                          text: "/${questionController.filteredQuestions.length}",
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall!
@@ -48,13 +48,13 @@ class Body extends StatelessWidget {
               child: PageView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   onPageChanged: questionController.updateTheQnNum,
-                  itemCount: questionController.filterdQuestion.length,
+                  itemCount: questionController.filteredQuestions.length,
                   controller: pageController,
                   itemBuilder: (context, index) {
                     print(
                         "Question at Index $index: ${questionController.questions[index]}");
                     return QuestionCard(
-                        question: questionController.filterdQuestion[index]);
+                        question: questionController.filteredQuestions[index]);
                   }),
             )
           ],

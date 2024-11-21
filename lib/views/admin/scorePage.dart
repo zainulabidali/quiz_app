@@ -19,7 +19,7 @@ class _ScorepageState extends State<Scorepage> {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            "assets/bgimg1.jpg",
+            "assets/bg img 5.jpg",
             fit: BoxFit.fill,
           ),
           Column(
@@ -36,7 +36,7 @@ class _ScorepageState extends State<Scorepage> {
               ),
               Spacer(),
               Text(
-                "${questionController.numofCorrectAns * 10}/ ${questionController.filterdQuestion.length * 10}",
+                "${questionController.numofCorrectAns * 10}/ ${questionController.filteredQuestions.length * 10}",
                 style: Theme.of(context)
                     .textTheme
                     .displaySmall!

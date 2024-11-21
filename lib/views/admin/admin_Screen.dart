@@ -24,30 +24,68 @@ class AdminScreen extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                controller: questionController.questionControllertext,
-                decoration: const InputDecoration(
-                  labelText: "Question",
+                controller: questionController.questionControllerText,
+                decoration: InputDecoration(
+                  fillColor: const Color.fromARGB(255, 89, 103, 115),
+                  filled: true,
+                  border: OutlineInputBorder(
+                    
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                      color: Colors.blue,
+                      
+                    ),
+                    
+                  ),
+                  labelText: "Enter the Question",
                 ),
               ),
+              SizedBox(height: 20,),
               for (var i = 0; i < 4; i++)
-                TextFormField(
-                  controller: questionController.optionalControllers[i],
-                  decoration: InputDecoration(
-                    labelText: "options ${i + 1}",
+              
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    
+                    controller: questionController.optionalControllers[i],
+                    decoration: InputDecoration(
+                        fillColor: const Color.fromARGB(255, 89, 103, 115),
+                  filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      labelText: "options ${i + 1}",
+                    ),
+                    
+                    
                   ),
                 ),
-              TextFormField(
-                controller: questionController.correctAnswerController,
-                decoration: const InputDecoration(
-                  labelText: "Correct Answer (0-3)",
+
+                SizedBox(height: 20,),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: questionController.correctAnswerController,
+                  decoration: const InputDecoration(
+                      fillColor: const Color.fromARGB(255, 89, 103, 115),
+                  filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))
+                    ),
+                    labelText: "Correct Answer ( 0 - 3 )",
+                  ),
                 ),
               ),
               const SizedBox(
                 height: 20,
               ),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 44, 139, 120))
+
+                ),
                 onPressed: () {
-                  if (questionController.questionControllertext.text.isEmpty) {
+                  if (questionController.questionControllerText.text.isEmpty) {
                     Get.snackbar("Error", "Please enter a question");
                   } else if (questionController
                       .optionalControllers[0].text.isEmpty) {
@@ -65,7 +103,7 @@ class AdminScreen extends StatelessWidget {
                     print("questons collected 0");
                     addQuestions();
                     print(
-                        ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>question collected ${questionController.questionControllertext.text}");
+                        ">>question collected ${questionController.questionControllerText.text}");
                   }
                 },
                 child: Text("Add Questions "),
@@ -79,7 +117,7 @@ class AdminScreen extends StatelessWidget {
 
   void addQuestions() async {
     // collecting question from the text controller
-    final String questionText = questionController.questionControllertext.text;
+    final String questionText = questionController.questionControllerText.text;
     final List<String> options = questionController.optionalControllers
         .map((controller) => controller.text)
         .toList();
@@ -94,9 +132,9 @@ class AdminScreen extends StatelessWidget {
         answer: correctAnswer);
 
     // save the questions shareprefrence
-    await questionController.saveQuestionToSharedPreferences(newQuestion);
+    await questionController.saveQuestionToHive(newQuestion);
     Get.snackbar("Added", "Question Added");
-    questionController.questionControllertext.clear();
+    questionController.questionControllerText.clear();
     questionController.optionalControllers.forEach((element) {
       element.clear();
     });

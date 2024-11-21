@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quiz_app/login_Screen/loginPage/login.dart';
 import 'package:quiz_app/utils/containers.dart';
 import 'package:quiz_app/views/admin/admin_dashbord.dart';
 import 'package:quiz_app/views/quiz_category.dart';
@@ -16,7 +17,7 @@ class WellcomeScreen extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            "assets/bgimg1.jpg",
+            "assets/bg img 5.jpg",
             fit: BoxFit.fill,
           ),
           SafeArea(
@@ -53,7 +54,7 @@ class WellcomeScreen extends StatelessWidget {
                       if (username == "Admin" || username == "admin") {
                         Get.to(AdminDashboard());
                       } else {
-                        Get.to(QuizCategory());
+                        Get.to(LoginPage());
                       }
                     },
                     child: Container(
@@ -74,7 +75,10 @@ class WellcomeScreen extends StatelessWidget {
                                   .labelLarge!
                                   .copyWith(color: Colors.black),
                             ),
-                            Icon(Icons.arrow_forward,color:Colors.black ,)
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Colors.black,
+                            )
                           ],
                         ),
                       ),

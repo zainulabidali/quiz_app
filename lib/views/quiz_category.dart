@@ -10,11 +10,12 @@ class QuizCategory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: Stack(
         fit: StackFit.expand,
         children: [
           Image.asset(
-            "assets/bgimg1.jpg",
+            "assets/bg img 5.jpg",
             fit: BoxFit.fill,
           ),
           GridView.builder(
@@ -23,6 +24,7 @@ class QuizCategory extends StatelessWidget {
               itemCount: _questionController.savedTitleCategory.length,
               itemBuilder: (context, index) {
                 return Card(
+
                     child: GestureDetector(
                   onTap: () {
                     
@@ -33,12 +35,19 @@ class QuizCategory extends StatelessWidget {
                         category:
                             _questionController.savedTitleCategory[index]));
                   },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    
                     children: [
-                      Icon(Icons.question_answer),
-                      Text(_questionController.savedTitleCategory[index]),
-                      Text(_questionController.savedSubtitleCategory[index]),
+                      Image.asset("assets/Category-removebg-preview.png",fit: BoxFit.cover,),
+
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(_questionController.savedTitleCategory[index],style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold),),
+                          Text(_questionController.savedSubtitleCategory[index],style: TextStyle(fontSize: 15,))
+                        ],
+                      ),
                     ],
                   ),
                 ));

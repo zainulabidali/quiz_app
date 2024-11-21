@@ -15,11 +15,11 @@ class Quizscreen extends StatefulWidget {
 class _QuizscreenState extends State<Quizscreen> {
   QuestionController questionController = Get.put(QuestionController());
 
-  @override
-  void initState() {
-    questionController.setFilteredQuestions(widget.category);
-    super.initState();
-  }
+@override
+void initState() {
+  super.initState();
+  questionController.setFilteredQuestions(widget.category);
+}
 
   @override
   Widget build(BuildContext context) {
