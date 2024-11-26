@@ -4,9 +4,13 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:quiz_app/models/question_models.dart';
 import 'package:quiz_app/views/admin/scorePage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class QuestionController extends GetxController
     with GetSingleTickerProviderStateMixin {
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   // Animation & Page Controller
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -60,7 +64,7 @@ class QuestionController extends GetxController
     box.add(jsonEncode(question.toJson()));
 
     update();
-    Get.snackbar("Success", "Question saved successfully.");
+    Get.snackbar("Success", "Question saved  to hive successfully.");
   }
 
   /// Load questions from Hive
@@ -111,6 +115,63 @@ class QuestionController extends GetxController
     }
   }
 
+
+
+Future<void> saveCategory(String title, String subtitle) async {
+  final box = Hive.box(_categoriesBox);
+
+  try {
+    // Save to Firebase
+    DocumentReference docRef = await _firestore.collection("categories").add({
+      "title": title,
+      "subtitle": subtitle,
+      "createdAt": Timestamp.now(),
+    });
+
+    // Save to Hive (with Firestore document ID for future reference)
+    savedTitleCategory.add(title);
+    savedSubtitleCategory.add(subtitle);
+
+    box.put("titles", savedTitleCategory.toList());
+    box.put("subtitles", savedSubtitleCategory.toList());
+
+    // Clear text fields after saving
+    categoryTitleController.clear();
+    categorySubtitleController.clear();
+
+    update();
+
+    Get.snackbar("Success", "Category saved successfully.");
+  } catch (e) {
+    Get.snackbar("Error", "Failed to save category: $e");
+    print("Error saving category: $e");
+  }
+}
+
+
+Future<void> saveQuestion(Question question) async {
+  final box = Hive.box(_questionsBox);
+
+  try {
+    // Save to Firebase
+    DocumentReference docRef = await _firestore.collection("questions").add(question.toJson());
+
+    // Save to Hive (optional: store Firestore ID for reference)
+    _questions.add(question);
+    box.add(jsonEncode(question.toJson()));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      update(); // Ensure update happens after the build phase
+    });
+
+    Get.snackbar("Success", "Question saved successfully.");
+  } catch (e) {
+    Get.snackbar("Error", "Failed to save question: $e");
+    print("Error saving question: $e");
+  }
+}
+
+
   /// Filter questions by category
   void setFilteredQuestions(String category) {
     _filteredQuestions = getQuestionsByCategory(category);
@@ -123,7 +184,6 @@ class QuestionController extends GetxController
     _questionNumber.value = index + 1;
     update();
   }
-
   /// Save a new category to Hive
   Future<void> saveCategoryToHive(String title, String subtitle) async {
     final box = Hive.box(_categoriesBox);
@@ -139,7 +199,7 @@ class QuestionController extends GetxController
     categorySubtitleController.clear();
     update();
 
-    Get.snackbar("Success", "Category created successfully.");
+    Get.snackbar("Success", "Category created to hive successfully.");
   }
 
   /// Load categories from Hive
@@ -151,40 +211,63 @@ class QuestionController extends GetxController
 
     update();
   }
+/// Delete a category from both Hive and Firestore
+Future<void> deleteCategory(int index) async {
+  if (index >= 0 && index < savedTitleCategory.length) {
+    final box = Hive.box(_categoriesBox);
+    final String categoryTitle = savedTitleCategory[index];
 
-  /// Delete a category
-  Future<void> deleteCategory(int index) async {
-    if (index >= 0 && index < savedTitleCategory.length) {
-      final box = Hive.box(_categoriesBox);
-
+    try {
+      // Delete from Hive
       savedTitleCategory.removeAt(index);
       savedSubtitleCategory.removeAt(index);
 
-      // Update Hive
       box.put("titles", savedTitleCategory.toList());
       box.put("subtitles", savedSubtitleCategory.toList());
 
+      // Delete from Firestore
+      QuerySnapshot snapshot = await _firestore
+          .collection("categories")
+          .where("title", isEqualTo: categoryTitle)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+
       update();
       Get.snackbar("Deleted", "Category deleted successfully.");
-    } else {
-      Get.snackbar("Error", "Invalid category index.");
+    } catch (e) {
+      Get.snackbar("Error", "Failed to delete category: $e");
+      print("Error deleting category: $e");
     }
+  } else {
+    Get.snackbar("Error", "Invalid category index.");
   }
+}
 
-  @override
-  void onInit() {
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 60));
-    _animation = Tween<double>(begin: 0, end: 1).animate(_animationController)
-      ..addListener(() {
+@override
+void onInit() {
+  _animationController =
+      AnimationController(vsync: this, duration: Duration(seconds: 60));
+  _animation = Tween<double>(begin: 0, end: 1).animate(_animationController)
+    ..addListener(() {
+      // Safely call update after the animation completes, if needed
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         update();
       });
-    _animationController.forward().whenComplete(nextQuestion);
+    });
+  _animationController.forward().whenComplete(nextQuestion);
 
+  // Make sure to load data after the widget build
+  WidgetsBinding.instance.addPostFrameCallback((_) {
     loadCategoriesFromHive();
     loadQuestionsFromHive();
-    _pageController = PageController();
+  });
 
-    super.onInit();
-  }
+  _pageController = PageController();
+
+  super.onInit();
+}
+
 }

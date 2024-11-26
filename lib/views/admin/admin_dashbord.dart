@@ -79,19 +79,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
       textConfirm: "Create",
       textCancel: "Cancel",
       onConfirm: () {
-  if (questionController.categoryTitleController.text.isNotEmpty &&
-      questionController.categorySubtitleController.text.isNotEmpty) {
-    questionController.saveCategoryToHive(
-      questionController.categoryTitleController.text,
-      questionController.categorySubtitleController.text,
-    );
-    print("Category Title: ${questionController.categoryTitleController.text}");
-    Get.back(); // Close the dialog after saving
-  } else {
-    Get.snackbar("Error", "Title and Subtitle cannot be empty.");
-  }
-},
-
+        if (questionController.categoryTitleController.text.isNotEmpty &&
+            questionController.categorySubtitleController.text.isNotEmpty) {
+          questionController.saveCategory(
+            questionController.categoryTitleController.text,
+            questionController.categorySubtitleController.text,
+          );
+          Get.back(); // Close the dialog after saving
+        } else {
+          Get.snackbar("Error", "Title and Subtitle cannot be empty.");
+        }
+      },
     );
   }
 }

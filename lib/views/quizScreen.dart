@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:quiz_app/controllers/question_controller.dart';
 import 'package:quiz_app/views/body.dart';
 
@@ -15,11 +14,20 @@ class Quizscreen extends StatefulWidget {
 class _QuizscreenState extends State<Quizscreen> {
   QuestionController questionController = Get.put(QuestionController());
 
-@override
-void initState() {
-  super.initState();
-  questionController.setFilteredQuestions(widget.category);
-}
+  @override
+  void initState() {
+    super.initState();
+
+    // Safely check if category is null or empty after widget build
+    if (widget.category.isEmpty) {
+      // Delay the snackbar until the widget is fully built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.snackbar("Error", "Category is not provided.");
+      });
+    } else {
+      questionController.setFilteredQuestions(widget.category);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

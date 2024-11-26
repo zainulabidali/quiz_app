@@ -50,12 +50,13 @@ class WellcomeScreen extends StatelessWidget {
                   Spacer(),
                   GestureDetector(
                     onTap: () {
-                      final username = usernameController.text;
-                      if (username == "Admin" || username == "admin") {
-                        Get.to(AdminDashboard());
-                      } else {
-                        Get.to(LoginPage());
-                      }
+                      final username = usernameController.text
+                          .trim(); // Trim input to avoid extra spaces
+
+                      // Navigate based on username value
+                      Get.to(() => username == "Admin" || username == "admin"
+                          ? AdminDashboard()
+                          : LoginPage());
                     },
                     child: Container(
                       width: double.infinity,

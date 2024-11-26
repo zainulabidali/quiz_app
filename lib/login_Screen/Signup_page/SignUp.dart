@@ -11,6 +11,8 @@ class Signup_Page extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _emailController = TextEditingController();
+    TextEditingController _passController = TextEditingController();
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -46,6 +48,7 @@ class Signup_Page extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Color(0xff1c2341),
@@ -66,6 +69,7 @@ class Signup_Page extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: TextField(
+                        controller: _passController,
                         obscureText: true,
                         decoration: InputDecoration(
                           filled: true,
@@ -85,7 +89,73 @@ class Signup_Page extends StatelessWidget {
                       width: size.width * 0.8,
                       height: 40,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final email = _emailController.text.trim();
+                          final password = _passController.text.trim();
+
+                          if (email.isEmpty || password.isEmpty) {
+                            // Show error for empty fields
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Please fill out all fields.")),
+                            );
+                            return;
+                          }
+
+                          // Validate email format
+                          if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Please enter a valid email address.")),
+                            );
+                            return;
+                          }
+
+                          try {
+                            // Sign up user
+                            UserCredential? userCredential = await _authService
+                                .signUpWithEmailandPassword(email, password);
+
+                            if (userCredential != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text("Sign up successful!")),
+                              );
+
+                              // Navigate to the QuizCategory screen
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => QuizCategory()),
+                              );
+                            }
+                          } on FirebaseAuthException catch (e) {
+                            // Handle specific Firebase errors
+                            String errorMessage;
+                            switch (e.code) {
+                              case 'weak-password':
+                                errorMessage = "The password is too weak.";
+                                break;
+                              case 'email-already-in-use':
+                                errorMessage =
+                                    "This email is already registered.";
+                                break;
+                              default:
+                                errorMessage = "Error: ${e.message}";
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(errorMessage)),
+                            );
+                          } catch (e) {
+                            // General error handling
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      "Error signing up: ${e.toString()}")),
+                            );
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 13, 147, 130)),
                         child: const Text("SIGN UP",
@@ -128,7 +198,7 @@ class Signup_Page extends StatelessWidget {
                               print("Google Singing ${user}");
 
                               // If sign-in is successful, navigate to HomePage
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => QuizCategory()),

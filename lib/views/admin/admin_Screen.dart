@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:quiz_app/controllers/question_controller.dart';
@@ -29,51 +30,54 @@ class AdminScreen extends StatelessWidget {
                   fillColor: const Color.fromARGB(255, 89, 103, 115),
                   filled: true,
                   border: OutlineInputBorder(
-                    
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: Colors.blue,
-                      
                     ),
-                    
                   ),
                   labelText: "Enter the Question",
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               for (var i = 0; i < 4; i++)
-              
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    
                     controller: questionController.optionalControllers[i],
                     decoration: InputDecoration(
-                        fillColor: const Color.fromARGB(255, 89, 103, 115),
-                  filled: true,
+                      fillColor: const Color.fromARGB(255, 89, 103, 115),
+                      filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       labelText: "options ${i + 1}",
                     ),
-                    
-                    
                   ),
                 ),
-
-                SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   controller: questionController.correctAnswerController,
                   decoration: const InputDecoration(
-                      fillColor: const Color.fromARGB(255, 89, 103, 115),
-                  filled: true,
+                    hintMaxLines: 1,
+                    fillColor: Color.fromARGB(255, 89, 103, 115),
+                    filled: true,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    labelText: "Correct Answer ( 0 - 3 )",
+                    labelText: "Correct Answer (0 - 3)",
                   ),
+                  keyboardType:
+                      TextInputType.number, // Restricts input to numbers
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-3]')), // Only allows numbers 0-3
+                  ],
                 ),
               ),
               const SizedBox(
@@ -81,9 +85,8 @@ class AdminScreen extends StatelessWidget {
               ),
               ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(const Color.fromARGB(255, 44, 139, 120))
-
-                ),
+                    backgroundColor: WidgetStateProperty.all(
+                        const Color.fromARGB(255, 44, 139, 120))),
                 onPressed: () {
                   if (questionController.questionControllerText.text.isEmpty) {
                     Get.snackbar("Error", "Please enter a question");
@@ -100,7 +103,6 @@ class AdminScreen extends StatelessWidget {
                       .optionalControllers[3].text.isEmpty) {
                     Get.snackbar("Error", "Please enter an option");
                   } else {
-                    print("questons collected 0");
                     addQuestions();
                     print(
                         ">>question collected ${questionController.questionControllerText.text}");
@@ -116,7 +118,6 @@ class AdminScreen extends StatelessWidget {
   }
 
   void addQuestions() async {
-    // collecting question from the text controller
     final String questionText = questionController.questionControllerText.text;
     final List<String> options = questionController.optionalControllers
         .map((controller) => controller.text)
@@ -131,13 +132,12 @@ class AdminScreen extends StatelessWidget {
         options: options,
         answer: correctAnswer);
 
-    // save the questions shareprefrence
-    await questionController.saveQuestionToHive(newQuestion);
-    Get.snackbar("Added", "Question Added");
+    // Save question to both Hive and Firebase
+    await questionController.saveQuestion(newQuestion);
+
+    // Clear input fields
     questionController.questionControllerText.clear();
-    questionController.optionalControllers.forEach((element) {
-      element.clear();
-    });
-    print(questionController.questions);
+    questionController.optionalControllers
+        .forEach((controller) => controller.clear());
   }
 }
