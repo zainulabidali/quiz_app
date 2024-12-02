@@ -25,7 +25,9 @@ class _QuizscreenState extends State<Quizscreen> {
         Get.snackbar("Error", "Category is not provided.");
       });
     } else {
-      questionController.setFilteredQuestions(widget.category);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        questionController.setFilteredQuestions(widget.category);
+      });
     }
   }
 

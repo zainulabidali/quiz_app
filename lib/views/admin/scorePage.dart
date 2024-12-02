@@ -63,9 +63,14 @@ class _ScorepageState extends State<Scorepage> {
                     Text(
                       "${questionController.numofCorrectAns} ",
                       style: TextStyle(
-                        color: questionController.numofCorrectAns < 5
+                        color: questionController.numofCorrectAns <=
+                                questionController.filteredQuestions.length / 3
                             ? Colors.red
-                            : questionController.numofCorrectAns < 8
+                            : questionController.numofCorrectAns <=
+                                    2 *
+                                        questionController
+                                            .filteredQuestions.length /
+                                        3
                                 ? Colors.orange
                                 : Colors.green,
                         fontSize: 40,
@@ -87,7 +92,8 @@ class _ScorepageState extends State<Scorepage> {
                 ),
 
                 // Displaying a conditional message
-                if (questionController.numofCorrectAns <= 5)
+                if (questionController.numofCorrectAns <=
+                    questionController.filteredQuestions.length / 3)
                   Text(
                     "Keep practicing! You'll get better.",
                     style: TextStyle(
@@ -95,7 +101,8 @@ class _ScorepageState extends State<Scorepage> {
                       fontSize: 20,
                     ),
                   )
-                else if (questionController.numofCorrectAns <= 8)
+                else if (questionController.numofCorrectAns <=
+                    2 * questionController.filteredQuestions.length / 3)
                   Text(
                     "Good job! You're improving.",
                     style: TextStyle(
@@ -111,6 +118,7 @@ class _ScorepageState extends State<Scorepage> {
                       fontSize: 20,
                     ),
                   ),
+
                 SizedBox(
                   height: 20,
                 ),
@@ -138,7 +146,7 @@ class _ScorepageState extends State<Scorepage> {
                     elevation: 5, // Shadow effect
                   ),
                   child: Text(
-                    "Sign Out",
+                    "Quit",
                     style: TextStyle(
                       fontSize: 16, // Text size
                       fontWeight: FontWeight.bold, // Text weight

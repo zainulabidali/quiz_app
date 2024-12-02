@@ -30,7 +30,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               return Card(
                 child: ListTile(
                   onTap: () {
-                    Get.to(AdminScreen(
+                    Get.to(() => AdminScreen(
                         quizCategory: controller.savedTitleCategory[index]));
                   },
                   leading: Icon(Icons.question_answer),

@@ -60,9 +60,15 @@ class _QuizCategoryState extends State<QuizCategory> {
                       print(
                           "Selected Category: ${_questionController.savedTitleCategory[index]}");
 
-                      Get.to(() => Quizscreen(
-                            category: _questionController.savedTitleCategory[index],
-                          ));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Quizscreen(
+                            category:
+                                _questionController.savedTitleCategory[index],
+                          ),
+                        ),
+                      );
                     },
                     child: Stack(
                       fit: StackFit.expand,

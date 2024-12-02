@@ -79,7 +79,7 @@ class WellcomeScreen extends StatelessWidget {
                             Icon(
                               Icons.arrow_forward,
                               color: Colors.black,
-                            )
+                            ),
                           ],
                         ),
                       ),

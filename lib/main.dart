@@ -7,7 +7,6 @@ import 'package:quiz_app/views/admin/scorePage.dart';
 import 'package:quiz_app/views/quiz_category.dart';
 import 'package:quiz_app/views/wellcome.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,11 +14,9 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox("categoriesBox");
   await Hive.openBox("questionsBox");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(const QuizApp());
 }
+
 
 class QuizApp extends StatelessWidget {
   const QuizApp({super.key});
